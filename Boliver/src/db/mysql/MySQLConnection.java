@@ -5,8 +5,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 
 import db.DBConnection;
+import entity.Order;
+import entity.Order.OrderBuilder;
 
 public class MySQLConnection implements DBConnection {
 	private Connection conn;
@@ -96,4 +100,43 @@ public class MySQLConnection implements DBConnection {
 	   	return false;
 	}
 
+	@Override
+	public Set<Order> getHistoryOrders(String userId, Integer start, Integer end) {
+		// TODO Auto-generated method stub
+		if (conn == null) {
+			return new HashSet<>();
+		}
+		Set<Order> historyOrders= new HashSet<>();
+//		Set<String> itemIds = getFavoriteItemIds(userId);
+		
+		try {
+			String sql = "SELECT user_id,order_id,robot_id,order_status,origin,destination,e_arrival,a_arrival,create_time FROM orderHistory "+
+				   		 "WHERE user_id = ?";
+			
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, userId);
+			
+			ResultSet rs = stmt.executeQuery();
+			
+			OrderBuilder builder = new OrderBuilder();
+			
+			while (rs.next()) {
+				builder.setOrderId(rs.getString("order_id"));
+				builder.setUserId(rs.getString("user_id"));
+				builder.setRobotId(rs.getString("robot_id"));
+				builder.setOrderStatus(rs.getString("order_status"));
+				builder.setOrigin(rs.getString("origin"));
+				builder.setDestination(rs.getString("destination"));
+				builder.seteArrival(rs.getString("e_arrival"));
+				builder.setaArrival(rs.getString("a_arrival"));
+				builder.setCreateTime(rs.getString("create_time"));
+				
+				historyOrders.add(builder.build());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return historyOrders;
+	}
 }
