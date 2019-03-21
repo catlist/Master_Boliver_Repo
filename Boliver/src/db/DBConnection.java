@@ -43,9 +43,15 @@ public interface DBConnection {
 	public Set<Order> getHistoryOrders(String userId, Integer start, Integer end);
 
 	/**
-	 * Gets categories based on item id
+	 * @param userId
 	 * 
-	 * @param itemId
 	 * @return set of orders
+	 */
+	
+	public boolean placeOrder(Order order);
+
+	/**
+	 * @param order
+	 * @return void
 	 */
 }

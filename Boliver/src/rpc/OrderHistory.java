@@ -20,7 +20,7 @@ import entity.Order;
 /**
  * Servlet implementation class OrderHistory
  */
-@WebServlet("/OrderHistory")
+@WebServlet("/orderhistory")
 public class OrderHistory extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

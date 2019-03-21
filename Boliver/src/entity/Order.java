@@ -13,7 +13,8 @@ public class Order {
 	private String aArrival;
 	private String eArrival;
 	private String createTime;
-	
+	private String cost;
+
 
 	/**
 	 * This is a builder pattern in Java.
@@ -29,6 +30,7 @@ public class Order {
 		this.aArrival = builder.aArrival;
 		this.eArrival = builder.eArrival;
 		this.createTime = builder.createTime;
+		this.cost = builder.cost;
 	}
 	
 	public static class OrderBuilder {
@@ -42,6 +44,7 @@ public class Order {
 		private String aArrival;
 		private String eArrival;
 		private String createTime;
+		private String cost;
 		
 		public void setOrderId(String orderId) {
 			this.orderId = orderId;
@@ -69,6 +72,9 @@ public class Order {
 		}
 		public void setCreateTime(String createTime) {
 			this.createTime = createTime;
+		}
+		public void setCost(String cost) {
+			this.cost = cost;
 		}
 		
 		public Order build() {
@@ -120,6 +126,10 @@ public class Order {
 	public String getCreateTime() {
 		return createTime;
 	}
+	
+	public String getCost() {
+		return cost;
+	}
 
 	public JSONObject toJSONObject() {
 		JSONObject obj = new JSONObject();
@@ -127,6 +137,7 @@ public class Order {
 			obj.put("order_id", orderId);
 			obj.put("robot_id", robotId);
 			obj.put("user_id", userId);
+			obj.put("cost", cost);
 			obj.put("orderStatus", orderStatus);
 			obj.put("origin",origin);
 			obj.put("destination", destination);
