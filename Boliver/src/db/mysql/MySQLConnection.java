@@ -37,27 +37,6 @@ public class MySQLConnection implements DBConnection {
 		}
 	}
 
-	@Override // this method is never called, was used to test something in Login.java, but
-				// well, I will leave it here for reference
-	public String getFullname(String username) {
-		if (conn == null) {
-			return "";
-		}
-		String name = "";
-		try {
-			String sql = "SELECT fname, lname FROM users WHERE username = ?";
-			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.setString(1, username);
-			ResultSet rs = statement.executeQuery();
-			while (rs.next()) {
-				name = rs.getString("fname") + " " + rs.getString("lname");
-			}
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
-		return name;
-	}
-
 	@Override
 	public boolean verifyLogin(String username, String password) {
 		if (conn == null) {
@@ -105,13 +84,37 @@ public class MySQLConnection implements DBConnection {
 	}
 
 	@Override
+	public String getDroneSpeed(String type) {
+		if (conn == null) {
+			System.err.println("DB connection failed");
+			return null;
+		}
+		try {
+			String sql = "SELECT speed FROM robotType WHERE type = ?";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, type);
+
+			ResultSet rs = ps.executeQuery();
+			String[] speed = new String[1];
+			while(rs.next()) {
+				speed[0] = rs.getString("speed");
+				// for debug: System.out.println("speeeeeeeeed: " + speed);
+			}
+			return speed[0];
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Override
 	public Set<Order> getHistoryOrders(String userId, Integer start, Integer end) {
-		// TODO Auto-generated method stub
+		
 		if (conn == null) {
 			return new HashSet<>();
 		}
 		Set<Order> historyOrders = new HashSet<>();
-//		Set<String> itemIds = getFavoriteItemIds(userId);
 
 		try {
 			String sql = "SELECT user_id, order_id, robot_id, order_status, origin, destination, e_arrival, a_arrival, create_time ,cost FROM orderHistory "
@@ -181,19 +184,10 @@ public class MySQLConnection implements DBConnection {
 	   		ps.setString(9, order.getCost());
 	   		System.out.println(ps);
 	   		return ps.executeUpdate() == 1;
-//	   		boolean status = ps.execute();
-//	   		if (status){
-//	   			System.out.println("S");
-//	   			return true;
-//	   		}
-//	   		else {
-//	   			System.out.println("F");
-//	   			return false;
-//	   		}
-		} catch (Exception e) {
-			// TODO: handle exception
+
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		
 		
 		return false;
 	}

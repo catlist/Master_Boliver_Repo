@@ -19,13 +19,75 @@ import entity.GeoLocation;
 
 public class GoogleAPI {
 	private static final String URL_DISTANCE_MATRIX = "https://maps.googleapis.com/maps/api/distancematrix/json?";
-	private static final String API_KEY = GoogleApiKeys.GOOGLE_MAPS_API_KEY;
+	private static final String DISTANCE_MATRIX_API_KEY = "AIzaSyB9-f2b2N0MXN9zfuiGQ7vXtNPl2WFTCaw";
 	private static final String MODE = "bicycling";
+	private static final String URL_GEOENCODING = "https://maps.googleapis.com/maps/api/geocode/json?";
+	private static final String GEOENCODING_API_KEY = "AIzaSyB2UggUrzdvmqJIgDNqGUAijQPLR3BUBZw";
+	
+	public static GeoLocation getGeoEncoding(String address){
+		
+		String query = String.format("address=%s&key=%s", address, GEOENCODING_API_KEY);
+		String url = URL_GEOENCODING + query;
+		
+		try {
+			HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+			connection.setRequestMethod("GET");
 
+			int responseCode = connection.getResponseCode();
+
+			//System.out.println("Send request to url: " + url);
+			System.out.println("Response_getGeoEncoding code: " + responseCode);
+
+			if (responseCode != 200) {
+				return null;
+			}
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			String line;
+			StringBuilder response = new StringBuilder();
+			while ((line = reader.readLine()) != null) {
+				response.append(line);
+			}
+			reader.close();
+
+			JSONObject obj = new JSONObject(response.toString());
+			if (!obj.isNull("results")) {
+				return getGeoEncodingObj(obj.getJSONArray("results"));
+			}
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public static GeoLocation getGeoEncodingObj(JSONArray results){
+		try {
+			
+			JSONObject result = results.getJSONObject(0);
+			JSONObject geometry = result.getJSONObject("geometry");
+			JSONObject location  = geometry.getJSONObject("location");
+			GeoLocation encoding = new GeoLocation(location.getDouble("lat"), location.getDouble("lng"));		
+			
+			return encoding;
+			
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public static List<DistanceMatrix> getDistanceMatrix(GeoLocation origin, GeoLocation dest) {
 
 		String query = String.format("units=imperial&origins=%s,%s&destinations=%s,%s&mode=%s&key=%s", origin.getLat(),
-				origin.getLon(), dest.getLat(), dest.getLon(), MODE, API_KEY);
+				                     origin.getLon(), dest.getLat(), dest.getLon(), MODE, DISTANCE_MATRIX_API_KEY);
 
 		String url = URL_DISTANCE_MATRIX + query;
 
@@ -35,8 +97,8 @@ public class GoogleAPI {
 
 			int responseCode = connection.getResponseCode();
 
-			System.out.println("Send request to url: " + url);
-			System.out.println("Response code: " + responseCode);
+			//System.out.println("Send request to url: " + url);
+			System.out.println("Response_getDistanceMatrix code: " + responseCode);
 
 			if (responseCode != 200) {
 				return new ArrayList<DistanceMatrix>();

@@ -42,7 +42,7 @@ public class SubmitOrder extends HttpServlet {
 		try {
 			OrderBuilder builder = new OrderBuilder();
 			//acquire parameter from front end
-			String robotType = input.getString("robot_type");
+			//String robotType = input.getString("robot_type");
 			String userId = input.getString("user_id");
 			String origin = input.getString("origin");
 			String destination = input.getString("destination");
