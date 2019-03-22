@@ -19,10 +19,10 @@ import entity.GeoLocation;
 
 public class GoogleAPI {
 	private static final String URL_DISTANCE_MATRIX = "https://maps.googleapis.com/maps/api/distancematrix/json?";
-	private static final String DISTANCE_MATRIX_API_KEY = "AIzaSyB9-f2b2N0MXN9zfuiGQ7vXtNPl2WFTCaw";
+	private static final String DISTANCE_MATRIX_API_KEY = "";
 	private static final String MODE = "bicycling";
 	private static final String URL_GEOENCODING = "https://maps.googleapis.com/maps/api/geocode/json?";
-	private static final String GEOENCODING_API_KEY = "AIzaSyB2UggUrzdvmqJIgDNqGUAijQPLR3BUBZw";
+	private static final String GEOENCODING_API_KEY = "";
 	
 	public static GeoLocation getGeoEncoding(String address){
 		
