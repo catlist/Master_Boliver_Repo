@@ -16,18 +16,17 @@ import db.DBConnection;
 import db.DBConnectionFactory;
 import entity.Order;
 
-
 /**
- * Servlet implementation class OrderHistory
+ * Servlet implementation class CurrentOrder
  */
-@WebServlet("/orderhistory")
-public class OrderHistory extends HttpServlet {
+@WebServlet("/currentorder")
+public class CurrentOrder extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public OrderHistory() {
+    public CurrentOrder() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -36,13 +35,12 @@ public class OrderHistory extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 		DBConnection conn = DBConnectionFactory.getConnection();
 		try {
 			JSONObject input = RpcHelper.readJSONObject(request);
 			String userId = input.getString("user_id");
 			JSONArray array = new JSONArray();
-			Set<Order> orders = conn.getHistoryOrders(userId, null, null);
+			Set<Order> orders = conn.getCurrentOrders(userId);
 			for (Order order : orders) {
 				JSONObject obj = order.toJSONObject();
 				array.put(obj);
