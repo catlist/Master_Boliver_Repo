@@ -70,7 +70,6 @@ public class GoogleAPI {
 	
 	public static GeoLocation getGeoEncodingObj(JSONArray results){
 		try {
-			
 			JSONObject result = results.getJSONObject(0);
 			JSONObject geometry = result.getJSONObject("geometry");
 			JSONObject location  = geometry.getJSONObject("location");

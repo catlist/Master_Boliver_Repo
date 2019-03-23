@@ -48,24 +48,26 @@ public class SearchRoute extends HttpServlet {
 			GeoLocation encoding_origin = GoogleAPI.getGeoEncoding(origin);
 			GeoLocation encoding_dest = GoogleAPI.getGeoEncoding(dest);
 			
-			//Codes below are used to test whether GoogleAPI.getGeoEncoding is working
-			//JSONObject obj_encoding = new JSONObject();
-			//obj_encoding.put("lat_origin", encoding_origin.getLat())
-			//            .put("lng_origin", encoding_origin.getLon())
-			//            .put("lat_dest", encoding_dest.getLat())
-			//            .put("lng_dest", encoding_dest.getLon());
-			//RpcHelper.writeJsonObject(response, obj_encoding);
+			/*
+			 * Codes here are used to test whether GoogleAPI.getGeoEncoding is working
+			   JSONObject obj_encoding = new JSONObject();
+			   obj_encoding.put("lat_origin", encoding_origin.getLat())
+			            .put("lng_origin", encoding_origin.getLon())
+			            .put("lat_dest", encoding_dest.getLat())
+			            .put("lng_dest", encoding_dest.getLon());
+			   RpcHelper.writeJsonObject(response, obj_encoding);
+			 * */
 			 
 			// Get travel distance and time for groundRobots
 			List<DistanceMatrix> groundResult = GoogleAPI.getDistanceMatrix(encoding_origin, encoding_dest);
 			
-			// Get droneResult;
-			Map<String, Integer> droneResult = CalDrone.calculateDrone(encoding_origin, encoding_dest);
+			// Get travel distance and time for drones
+			Map<String, Double> droneResult = CalDrone.calculateDrone(encoding_origin, encoding_dest);
 
 			JSONObject obj = new JSONObject();
 			obj.put("origin", origin)
 			   .put("destination", dest)
-			   .put("distance_drone", droneResult.get("distance") + " mi")
+			   .put("distance_drone", droneResult.get("distance") + " mile")
 			   .put("time_needed_drone", droneResult.get("time") + " mins")
 			   .put("distance_groundRobot:", groundResult.get(0).getDistance_text())
 			   .put("time_needed__groundRobot:", groundResult.get(0).getDuration_text());

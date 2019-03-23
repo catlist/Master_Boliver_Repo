@@ -12,6 +12,8 @@ import java.util.Set;
 import db.DBConnection;
 import entity.Order;
 import entity.Order.OrderBuilder;
+import entity.TrackOrderEntity;
+import entity.TrackOrderEntity.TrackOrderBuilder;
 
 public class MySQLConnection implements DBConnection {
 	private Connection conn;
@@ -108,18 +110,24 @@ public class MySQLConnection implements DBConnection {
 		return null;
 	}
 	
+	// TO BE Tested: getHistoryOrders()
+	// TO BE Tested: placeOrder()
+	// TO BE Tested: trackOrder()
+	
 	@Override
 	public Set<Order> getHistoryOrders(String userId, Integer start, Integer end) {
 		
 		if (conn == null) {
+			System.out.println("DB connection failed for getCurrentOrders getHistoryOrders");
 			return new HashSet<>();
 		}
 		Set<Order> historyOrders = new HashSet<>();
-
 		try {
-			String sql = "SELECT user_id, order_id, robot_id, order_status, origin, destination, e_arrival, a_arrival, create_time ,cost FROM orderHistory "
-					+ "WHERE user_id = ?";
-
+			String sql = "SELECT a.user_id user_id,a.order_id order_id,a.robot_id robot_id,a.order_status order_status,"
+					     + "a.origin origin,a.destination destination,a.e_arrival e_arrival,a.a_arrival a_arrival,"
+					     + "a.create_time create_time,a.cost cost,c.type type From orderHistory a,Robot b,Robottype c"
+					     + " where a.user_id = ? and a.robot_id=b.robot_id and b.type_id=c.type_id";
+			
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			stmt.setString(1, userId);
 
@@ -127,9 +135,9 @@ public class MySQLConnection implements DBConnection {
 
 			OrderBuilder builder = new OrderBuilder();
 
-			while (rs.next()) {
-				builder.setOrderId(rs.getString("order_id"));
+			while (rs.next()) {		
 				builder.setUserId(rs.getString("user_id"));
+				builder.setOrderId(rs.getString("order_id"));
 				builder.setRobotId(rs.getString("robot_id"));
 				builder.setOrderStatus(rs.getString("order_status"));
 				builder.setOrigin(rs.getString("origin"));
@@ -138,7 +146,7 @@ public class MySQLConnection implements DBConnection {
 				builder.setaArrival(rs.getString("a_arrival"));
 				builder.setCreateTime(rs.getString("create_time"));
 				builder.setCost(rs.getString("cost"));
-
+				builder.setRobotType(rs.getString("type"));
 				historyOrders.add(builder.build());
 			}
 		} catch (SQLException e) {
@@ -146,6 +154,47 @@ public class MySQLConnection implements DBConnection {
 		}
 
 		return historyOrders;
+	}
+	
+	@Override
+	public Set<Order> getCurrentOrders(String userId){
+		if (conn == null) {
+			System.out.println("DB connection failed for getCurrentOrders");
+			return new HashSet<>();
+		}
+		Set<Order> currentOrders = new HashSet<>();
+		try {
+			String sql = "SELECT currentorder.order_id, currentorder.robot_id, robotType.type, currentorder.order_status, robot.curLocation, currentorder.origin, currentorder.destination, currentorder.e_arrival, currentorder.create_time, currentorder.cost   \r\n" + 
+					"\r\n" + 
+					"FROM currentOrder\r\n" + 
+					"INNER JOIN robot ON currentOrder.robot_id = robot.robot_id \r\n" + 
+					"INNER JOIN robotType ON robot.type_id = robotType.type_id\r\n" + 
+					"WHERE currentorder.user_id = ?";
+			
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, userId);
+
+			ResultSet rs = stmt.executeQuery();
+
+			OrderBuilder builder = new OrderBuilder();
+
+			while (rs.next()) {		
+				builder.setOrderId(rs.getString("order_id"));
+				builder.setRobotId(rs.getString("robot_id"));
+				builder.setOrderStatus(rs.getString("order_status"));
+				builder.setOrigin(rs.getString("origin"));
+				builder.setDestination(rs.getString("destination"));
+				builder.seteArrival(rs.getString("e_arrival"));
+				builder.setCreateTime(rs.getString("create_time"));
+				builder.setCost(rs.getString("cost"));
+				builder.setRobotType(rs.getString("type"));
+				currentOrders.add(builder.build());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return currentOrders;
 	}
 
 	@Override
@@ -182,7 +231,9 @@ public class MySQLConnection implements DBConnection {
 	   		ps.setString(7, order.geteArrival());
 	   		ps.setString(8, order.getCreateTime());
 	   		ps.setString(9, order.getCost());
-	   		System.out.println(ps);
+	   		
+	   		//System.out.println(ps);
+	   		
 	   		return ps.executeUpdate() == 1;
 
 		} catch (SQLException e) {
@@ -190,5 +241,46 @@ public class MySQLConnection implements DBConnection {
 		}
 		
 		return false;
+	}
+	
+	@Override
+	public Set<TrackOrderEntity> trackOrder(String orderId) {
+		if (conn == null) {
+			System.err.println("DB connection failed");
+			return null;
+		}
+		Set<TrackOrderEntity> robotSet = new HashSet<>();
+		try {
+			String sql ="SELECT currentorder.order_id, currentorder.robot_id, robotType.type, robot.curLocation, currentorder.origin, currentorder.destination, currentorder.e_arrival, currentorder.create_time, currentorder.cost   \r\n" + 
+					"\r\n" + 
+					"FROM currentOrder\r\n" + 
+					"INNER JOIN robot ON currentOrder.robot_id = robot.robot_id \r\n" + 
+					"INNER JOIN robotType ON robot.type_id = robotType.type_id\r\n" + 
+					"WHERE order_id = ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, orderId);
+
+			ResultSet rs = stmt.executeQuery();
+
+			TrackOrderBuilder builder = new TrackOrderBuilder();
+
+			while (rs.next()) {		
+				builder.setOrderId(rs.getString("currentorder.order_id"));
+				builder.setRobotId(rs.getString("currentorder.robot_id"));
+				builder.setRobotType(rs.getString("robotType.type"));
+				builder.setCurrentLocation(rs.getString("robot.curLocation"));
+				builder.setOrigin(rs.getString("currentorder.origin"));
+				builder.setDestination(rs.getString("currentorder.destination"));
+				builder.setEstArrival(rs.getString("currentorder.e_arrival"));
+				builder.setCreateTime(rs.getString("currentorder.create_time"));
+				builder.setCost(rs.getString("currentorder.cost"));
+				robotSet.add(builder.build());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return robotSet;
+
 	}
 }

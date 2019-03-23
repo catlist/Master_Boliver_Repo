@@ -36,7 +36,7 @@ public class SubmitOrder extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		
 		DBConnection conn = DBConnectionFactory.getConnection();
 		JSONObject input = RpcHelper.readJSONObject(request);	
 		try {
@@ -80,7 +80,7 @@ public class SubmitOrder extends HttpServlet {
 			}
 			RpcHelper.writeJsonObject(response, obj);
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}finally {
 			conn.close();
 		}

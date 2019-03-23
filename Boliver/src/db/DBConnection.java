@@ -3,6 +3,7 @@ package db;
 import java.util.Set;
 
 import entity.Order;
+import entity.TrackOrderEntity;
 
 public interface DBConnection {
 	/**
@@ -16,19 +17,12 @@ public interface DBConnection {
 			String lastname);
 
 	public Set<Order> getHistoryOrders(String userId, Integer start, Integer end);
-
-	/**
-	 * @param userId
-	 * 
-	 * @return set of orders
-	 */
 	
 	public boolean placeOrder(Order order);
-
-	/**
-	 * @param order
-	 * @return void
-	 */
+	
+	public Set<TrackOrderEntity> trackOrder(String orderId);
 	
 	public String getDroneSpeed(String type);
+	
+	public Set<Order> getCurrentOrders(String userId);
 }

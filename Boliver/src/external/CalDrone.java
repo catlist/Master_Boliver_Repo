@@ -8,13 +8,21 @@ import db.DBConnectionFactory;
 import entity.GeoLocation;
 
 public class CalDrone {
-	public static Map<String, Integer> calculateDrone(GeoLocation origin, GeoLocation dest) {
-		Map<String, Integer> map = new HashMap<>();
+	public static Map<String, Double> calculateDrone(GeoLocation origin, GeoLocation dest) {
+		Map<String, Double> map = new HashMap<>();
 		DBConnection conn = DBConnectionFactory.getConnection();
 		try {
-			int speed = Integer.parseInt(conn.getDroneSpeed("drone")); 
-			int distance = calculateDistance(origin,dest);
-			int time = distance/speed;
+			int speedPerHour = Integer.parseInt(conn.getDroneSpeed("drone"));
+			//System.out.println("speedPerHour is: " + speedPerHour);
+			
+			double speedPerMin = speedPerHour / 60.0;
+			//System.out.println("speedPerMinute is: " + speedPerMin);
+			
+			double distance = Haversince.calculateDistance(origin,dest);
+			//System.out.println("HaverDistance is: " + distance);
+			
+			double time = distance/speedPerMin;
+			
 			map.put("distance", distance);
 			map.put("time", time);
 			return map;
@@ -25,10 +33,4 @@ public class CalDrone {
 		return null;
 	}
 	
-	private static int calculateDistance(GeoLocation origin, GeoLocation dest) {
-		// Calculate distance given two pairs of lat/lon coordinates
-		
-		return 360;
-	}
-
 }

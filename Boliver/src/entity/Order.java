@@ -3,9 +3,9 @@ package entity;
 import org.json.JSONObject;
 
 public class Order {
-	
 	private String orderId;
 	private String robotId;
+	private String robotType;
 	private String userId;
 	private String orderStatus;
 	private String origin;
@@ -14,15 +14,11 @@ public class Order {
 	private String eArrival;
 	private String createTime;
 	private String cost;
-
-
-	/**
-	 * This is a builder pattern in Java.
-	 */
 	
 	private Order(OrderBuilder builder) {
 		this.orderId = builder.orderId;
 		this.robotId = builder.robotId;
+		this.robotType = builder.robotType;
 		this.userId = builder.userId;
 		this.orderStatus = builder.orderStatus;
 		this.origin = builder.origin;
@@ -37,6 +33,7 @@ public class Order {
 		
 		private String orderId;
 		private String robotId;
+		private String robotType;
 		private String userId;
 		private String orderStatus;
 		private String origin;
@@ -51,6 +48,9 @@ public class Order {
 		}
 		public void setRobotId(String robotId) {
 			this.robotId = robotId;
+		}
+		public void setRobotType(String robotType) {
+			this.robotType = robotType;
 		}
 		public void setUserId(String userId) {
 			this.userId = userId;
@@ -136,6 +136,7 @@ public class Order {
 		try {
 			obj.put("order_id", orderId);
 			obj.put("robot_id", robotId);
+			obj.put("robotType", robotType);
 			obj.put("user_id", userId);
 			obj.put("cost", cost);
 			obj.put("orderStatus", orderStatus);

@@ -128,9 +128,9 @@ public class MySQLTableCreation {
 			statement.execute(sql);
 			
 				// INSERT INTO RobotType
-			sql = "INSERT INTO RobotType VALUES('1','ground','40')";
+			sql = "INSERT INTO RobotType VALUES('1','ground','10')";
 			statement.execute(sql);
-			sql = "INSERT INTO RobotType VALUES('2','drone','60')";
+			sql = "INSERT INTO RobotType VALUES('2','drone','50')";
 			statement.execute(sql);
 			
 		    // INSERT INTO Base
