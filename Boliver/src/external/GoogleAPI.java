@@ -74,7 +74,8 @@ public class GoogleAPI {
 			JSONObject result = results.getJSONObject(0);
 			JSONObject geometry = result.getJSONObject("geometry");
 			JSONObject location  = geometry.getJSONObject("location");
-			GeoLocation encoding = new GeoLocation(location.getDouble("lat"), location.getDouble("lng"));		
+			String formattedAddress = result.getString("formatted_address");
+			GeoLocation encoding = new GeoLocation(location.getDouble("lat"), location.getDouble("lng"), formattedAddress);		
 			
 			return encoding;
 			

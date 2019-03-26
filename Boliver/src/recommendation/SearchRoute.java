@@ -41,8 +41,8 @@ public class SearchRoute extends HttpServlet {
 		
 		JSONObject input = RpcHelper.readJSONObject(request);
 		try {
-			String origin = input.getString("origin");
-			String dest = input.getString("destination");
+			String origin = input.getString("origin").replaceAll("\\s+", "+");
+			String dest = input.getString("destination").replaceAll("\\s+", "+");
 			
 			// Convert address into lat,lon
 			GeoLocation encoding_origin = GoogleAPI.getGeoEncoding(origin);
@@ -65,12 +65,12 @@ public class SearchRoute extends HttpServlet {
 			Map<String, Double> droneResult = CalDrone.calculateDrone(encoding_origin, encoding_dest);
 
 			JSONObject obj = new JSONObject();
-			obj.put("origin", origin)
-			   .put("destination", dest)
+			obj.put("origin", encoding_origin.getAddress())
+			   .put("destination", encoding_dest.getAddress())
 			   .put("distance_drone", droneResult.get("distance") + " mile")
 			   .put("time_needed_drone", droneResult.get("time") + " mins")
 			   .put("distance_groundRobot:", groundResult.get(0).getDistance_text())
-			   .put("time_needed__groundRobot:", groundResult.get(0).getDuration_text());
+			   .put("time_needed_groundRobot:", groundResult.get(0).getDuration_text());
 			RpcHelper.writeJsonObject(response, obj);
 			
 		} catch (Exception e) {
