@@ -20,10 +20,17 @@ import entity.GeoLocation;
 public class GoogleAPI {
 	private static final String URL_DISTANCE_MATRIX = "https://maps.googleapis.com/maps/api/distancematrix/json?";
 
+<<<<<<< HEAD
 	private static final String DISTANCE_MATRIX_API_KEY = "";
 	private static final String MODE = "bicycling";
 	private static final String URL_GEOENCODING = "https://maps.googleapis.com/maps/api/geocode/json?";
 	private static final String GEOENCODING_API_KEY = "";
+=======
+	private static final String DISTANCE_MATRIX_API_KEY = " ";
+	private static final String MODE = "bicycling";
+	private static final String URL_GEOENCODING = "https://maps.googleapis.com/maps/api/geocode/json?";
+	private static final String GEOENCODING_API_KEY = " ";
+>>>>>>> 140db53646b11eb793ac4ec84e59ddd879da3cb8
 	
 	public static GeoLocation getGeoEncoding(String address){
 		
