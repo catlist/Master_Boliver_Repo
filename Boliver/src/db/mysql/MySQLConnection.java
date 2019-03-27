@@ -5,15 +5,16 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-
 import db.DBConnection;
+import entity.BaseStatus;
+import entity.BaseStatus.BaseStatusBuilder;
 import entity.Order;
 import entity.Order.OrderBuilder;
-import entity.TrackOrderEntity;
-import entity.TrackOrderEntity.TrackOrderBuilder;
 
 public class MySQLConnection implements DBConnection {
 	private Connection conn;
@@ -54,13 +55,50 @@ public class MySQLConnection implements DBConnection {
 			while (rs.next()) {
 				return true;
 			}
-			;
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
 		return false;
 	}
 
+	@Override
+	public boolean isBlackListed(String token) {
+		if (conn == null) {
+			System.err.println("DB connection failed");
+			return false;
+		}
+		try { 
+			
+			String sql = "SELECT token FROM blacklist WHERE token = ?";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, token);
+			ResultSet rs = statement.executeQuery();
+			while (rs.next()) {
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean addToBlackList(String token) {
+		if (conn == null) {
+			System.err.println("DB connection failed");
+			return false;
+		}
+		try {
+			String sql = "INSERT IGNORE INTO BlackList VALUES(?)";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, token);
+			return ps.executeUpdate() == 1;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	@Override
 	public boolean registerUser(String userId, String username, String password, String email, String firstname,
 			String lastname) {
@@ -109,10 +147,6 @@ public class MySQLConnection implements DBConnection {
 		}
 		return null;
 	}
-	
-	// TO BE Tested: getHistoryOrders()
-	// TO BE Tested: placeOrder()
-	// TO BE Tested: trackOrder()
 	
 	@Override
 	public Set<Order> getHistoryOrders(String userId, Integer start, Integer end) {
@@ -216,7 +250,9 @@ public class MySQLConnection implements DBConnection {
 	   				order.getDestination() == null &&
 					order.geteArrival() == null &&
 					order.getCreateTime() == null &&
-					order.getCost() == null
+					order.getCost() == null &&
+					order.getSender() == null &&
+					order.getReceiver() == null
    				) {
 	   			System.out.println("There is null in the data.");
 	   			return false;
@@ -228,9 +264,11 @@ public class MySQLConnection implements DBConnection {
 	   		ps.setString(4, order.getOrderStatus());
 	   		ps.setString(5, order.getOrigin());
 	   		ps.setString(6, order.getDestination());
-	   		ps.setString(7, order.geteArrival());
-	   		ps.setString(8, order.getCreateTime());
-	   		ps.setString(9, order.getCost());
+	   		ps.setString(6, order.getSender());
+	   		ps.setString(7, order.getReceiver());
+	   		ps.setString(8, order.geteArrival());
+	   		ps.setString(9, order.getCreateTime());
+	   		ps.setString(10, order.getCost());
 	   		
 	   		//System.out.println(ps);
 	   		
@@ -244,12 +282,12 @@ public class MySQLConnection implements DBConnection {
 	}
 	
 	@Override
-	public Set<TrackOrderEntity> trackOrder(String orderId) {
+	public Set<Order> trackOrder(String orderId) {
 		if (conn == null) {
 			System.err.println("DB connection failed");
 			return null;
 		}
-		Set<TrackOrderEntity> robotSet = new HashSet<>();
+		Set<Order> results = new HashSet<>();
 		try {
 			String sql ="SELECT currentorder.order_id, currentorder.robot_id, robotType.type, robot.curLocation, currentorder.origin, currentorder.destination, currentorder.e_arrival, currentorder.create_time, currentorder.cost   \r\n" + 
 					"\r\n" + 
@@ -262,7 +300,7 @@ public class MySQLConnection implements DBConnection {
 
 			ResultSet rs = stmt.executeQuery();
 
-			TrackOrderBuilder builder = new TrackOrderBuilder();
+			OrderBuilder builder = new OrderBuilder();
 
 			while (rs.next()) {		
 				builder.setOrderId(rs.getString("currentorder.order_id"));
@@ -271,16 +309,103 @@ public class MySQLConnection implements DBConnection {
 				builder.setCurrentLocation(rs.getString("robot.curLocation"));
 				builder.setOrigin(rs.getString("currentorder.origin"));
 				builder.setDestination(rs.getString("currentorder.destination"));
-				builder.setEstArrival(rs.getString("currentorder.e_arrival"));
+				builder.seteArrival(rs.getString("currentorder.e_arrival"));
 				builder.setCreateTime(rs.getString("currentorder.create_time"));
 				builder.setCost(rs.getString("currentorder.cost"));
-				robotSet.add(builder.build());
+				results.add(builder.build());
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
-		return robotSet;
+		return results;
+	}
+	
+	@Override
+	public List<BaseStatus> getBaseStatus(){
+		if (conn == null) {
+			System.err.println("DB connection failed");
+			return null;
+		}
+		
+		List<BaseStatus> results = new ArrayList<>();
+		
+		try {
+			for(int i = 1; i < 4; i++) {
+				String sql = "SELECT type_id, lat, lon, address FROM `robot` INNER JOIN base ON robot.base_id = base.base_id WHERE robot.base_id = ? GROUP BY type_id";
+				PreparedStatement stmt = conn.prepareStatement(sql);
+				stmt.setInt(1, i);
+				ResultSet rs = stmt.executeQuery();
+				BaseStatusBuilder builder = new BaseStatusBuilder();
+				builder.setBaseId(i);
+				boolean flag = false;
+				while(rs.next()) {
+					if(rs.getString("type_id").equals("1")) {
+						builder.setGround(true);
+					}
+					if(rs.getString("type_id").equals("2")) {
+						builder.setDrone(true);
+					}
+					if(!flag) {
+						builder.setLat(rs.getString("lat"));
+						builder.setLon(rs.getString("lon"));
+						builder.setAddress(rs.getString("address"));
+						flag = true;
+					}
+				}
+				results.add(builder.build());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
+		return results;
+	}
+	
+	@Override
+	public String getRobotId(String baseAddress, String robotType) {
+		if (conn == null) {
+			System.err.println("DB connection failed");
+			return null;
+		}
+		
+		try {
+			String sql = "SELECT robot_id FROM `robot` "
+					+ "INNER JOIN base ON robot.base_id = base.base_id "
+					+ "INNER JOIN robotType ON robot.type_id = robottype.type_id "
+					+ "WHERE address = ? AND robotType.type = ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, baseAddress);
+			stmt.setString(2, robotType);
+			
+			ResultSet rs = stmt.executeQuery();
+			String robotId = null;
+			while(rs.next()) {
+				robotId = rs.getString("robot_id");
+				return robotId;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Override
+	public boolean updateRobotStatus(String robotId, String destination) {
+		if (conn == null) {
+			System.err.println("DB connection failed");
+			return false;
+		}
+		try {
+			String sql = "";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			
+			return stmt.executeUpdate() == 1;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return false;
 	}
 }

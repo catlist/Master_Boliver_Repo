@@ -6,6 +6,7 @@ public class Order {
 	private String orderId;
 	private String robotId;
 	private String robotType;
+	private String currentLocation;
 	private String userId;
 	private String orderStatus;
 	private String origin;
@@ -14,11 +15,14 @@ public class Order {
 	private String eArrival;
 	private String createTime;
 	private String cost;
+	private String sender;
+	private String receiver;
 	
 	private Order(OrderBuilder builder) {
 		this.orderId = builder.orderId;
 		this.robotId = builder.robotId;
 		this.robotType = builder.robotType;
+		this.currentLocation = builder.currentLocation;
 		this.userId = builder.userId;
 		this.orderStatus = builder.orderStatus;
 		this.origin = builder.origin;
@@ -27,6 +31,8 @@ public class Order {
 		this.eArrival = builder.eArrival;
 		this.createTime = builder.createTime;
 		this.cost = builder.cost;
+		this.sender = builder.sender;
+		this.receiver = builder.receiver;
 	}
 	
 	public static class OrderBuilder {
@@ -34,6 +40,7 @@ public class Order {
 		private String orderId;
 		private String robotId;
 		private String robotType;
+		private String currentLocation;
 		private String userId;
 		private String orderStatus;
 		private String origin;
@@ -42,7 +49,15 @@ public class Order {
 		private String eArrival;
 		private String createTime;
 		private String cost;
+		private String sender;
+		private String receiver;
 		
+		public void setSender(String sender) {
+			this.sender = sender;
+		}		
+		public void setReceiver(String receiver) {
+			this.receiver = receiver;
+		}
 		public void setOrderId(String orderId) {
 			this.orderId = orderId;
 		}
@@ -51,6 +66,9 @@ public class Order {
 		}
 		public void setRobotType(String robotType) {
 			this.robotType = robotType;
+		}
+		public void setCurrentLocation(String currentLocation) {
+			this.currentLocation = currentLocation;
 		}
 		public void setUserId(String userId) {
 			this.userId = userId;
@@ -82,7 +100,12 @@ public class Order {
 		}
 	}
 
-
+	public String getSender() {
+		return sender;
+	}
+	public String getReceiver() {
+		return receiver;
+	}
 	public String getOrderId() {
 		return orderId;
 	}
@@ -137,6 +160,7 @@ public class Order {
 			obj.put("order_id", orderId);
 			obj.put("robot_id", robotId);
 			obj.put("robotType", robotType);
+			obj.put("currentLocation", currentLocation);
 			obj.put("user_id", userId);
 			obj.put("cost", cost);
 			obj.put("orderStatus", orderStatus);

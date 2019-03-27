@@ -14,8 +14,10 @@ import org.json.JSONObject;
 
 import db.DBConnection;
 import db.DBConnectionFactory;
+import entity.BearerToken;
 import entity.Order;
 import entity.Order.OrderBuilder;
+import oAuth.CreateAndVerify;
 
 /**
  * Servlet implementation class PlaceOrder
@@ -29,7 +31,7 @@ public class SubmitOrder extends HttpServlet {
      */
     public SubmitOrder() {
         super();
-        // TODO Auto-generated constructor stub
+        
     }
 
 	/**
@@ -37,52 +39,70 @@ public class SubmitOrder extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		DBConnection conn = DBConnectionFactory.getConnection();
-		JSONObject input = RpcHelper.readJSONObject(request);	
-		try {
-			OrderBuilder builder = new OrderBuilder();
-			//acquire parameter from front end
-			//String robotType = input.getString("robot_type");
-			String userId = input.getString("user_id");
-			String origin = input.getString("origin");
-			String destination = input.getString("destination");
-			String eArrival = input.getString("e_arrival");
-			String cost = input.getString("cost");
+		// Get token from request
+		String token = BearerToken.getBearerToken(request);
+		
+		if(token != null && CreateAndVerify.isTokenValid(token, request.getRemoteAddr())) {
+			// connect to database
+			DBConnection conn = DBConnectionFactory.getConnection();
+			// acquire parameters from front end
+			JSONObject input = RpcHelper.readJSONObject(request);	
 			
-			//generate order ID and create time
-			Date date = new Date();
-			SimpleDateFormat mf = new SimpleDateFormat("yyyyMMddhhmmss");
-			String createTime = mf.format(date);
-			String orderId = createTime + String.format("%05d", RANDOM++);
-			if (RANDOM >= 100) {
-				RANDOM = 0;
+			try {
+				//generate order ID and create time
+				Date date = new Date();
+				SimpleDateFormat mf = new SimpleDateFormat("yyyyMMddhhmmss");
+				String createTime = mf.format(date);
+				String orderId = createTime + String.format("%05d", RANDOM++);
+				if (RANDOM >= 100) {
+					RANDOM = 0;
+				}
+				
+				OrderBuilder builder = new OrderBuilder();
+				
+				String robotId = conn.getRobotId(input.get("address").toString(), input.get("type").toString());
+				String userId = input.getString("user_id");
+				String origin = input.getString("origin");
+				String destination = input.getString("destination");
+				String eArrival = input.getString("travel_time"); // need to calculate estimated arrival time
+				String cost = input.getString("cost");
+				String sender = input.getString("sender");
+				String receiver = input.getString("receiver");
+				
+				builder.setOrderId(orderId);
+				builder.setRobotId(robotId);
+				builder.setUserId(userId);
+				builder.setOrderStatus("2");
+				builder.setOrigin(origin);
+				builder.setDestination(destination);
+				builder.seteArrival(eArrival);
+				builder.setCreateTime(createTime);
+				builder.setCost(cost);
+				builder.setSender(sender);
+				builder.setReceiver(receiver);
+				
+				Order order = builder.build();
+				JSONObject obj = new JSONObject();
+				
+				if(conn.placeOrder(order)) {
+					obj.put("status", "your order has been created");
+				}else {
+					response.setStatus(401);
+					obj.put("status", "failed");
+				}
+				RpcHelper.writeJsonObject(response, obj);
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				conn.close();
 			}
 			
-			String robotId = "1";
-			
-			builder.setOrderId(orderId);
-			builder.setRobotId(robotId);
-			builder.setUserId(userId);
-			builder.setOrderStatus("1");
-			builder.setOrigin(origin);
-			builder.setDestination(destination);
-			builder.seteArrival(eArrival);
-			builder.setCreateTime(createTime);
-			builder.setCost(cost);
-			
-			Order order = builder.build();
+		} else { // if your token is invalid 
 			JSONObject obj = new JSONObject();
-			if(conn.placeOrder(order)) {
-				obj.put("status", "success");
-			}else {
-				response.setStatus(401);
-				obj.put("status", "failed");
-			}
+			obj.put("status", "are you trying to gain illegal access? Where is your token?");
 			RpcHelper.writeJsonObject(response, obj);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}finally {
-			conn.close();
 		}
+
 	}
 }

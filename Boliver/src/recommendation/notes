@@ -1,0 +1,28 @@
+use the logic that generate orderId in submitOrder to generate userId in Register
+
+submitOrder(robotType, baseAddress, origin, destination) {
+    find and assign robot()
+	new CurrentOrder()
+	update robotStatus()
+	return message telling user that his/her order has been submitted/created
+}
+
+confirmOrder(order_id){
+    update order status
+    update robot status
+    move order from currentOrder to orderHistory
+    send robot back to closest base
+}
+
+cancelOrder(order_id){
+	update order status
+	update robot status
+	move order from currentOrder to orderHistory
+	send robot back to closest base
+}
+
+TODO:
+1. calculate estimated arrival time given travel_time(minutes) and currentTime
+2. finish updateRobotStatus( )
+3. confirmOrder(order_id)
+4. cancelOrder(order_id)

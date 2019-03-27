@@ -25,6 +25,7 @@ public class CalDrone {
 			
 			map.put("distance", distance);
 			map.put("time", time);
+			map.put("speed", speedPerMin);
 			return map;
 			
 		} catch(Exception e) {
