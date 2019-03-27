@@ -17,6 +17,7 @@ import db.DBConnectionFactory;
 import entity.BearerToken;
 import entity.Order;
 import entity.Order.OrderBuilder;
+import external.CalETime;
 import oAuth.CreateAndVerify;
 
 /**
@@ -64,7 +65,7 @@ public class SubmitOrder extends HttpServlet {
 				String userId = input.getString("user_id");
 				String origin = input.getString("origin");
 				String destination = input.getString("destination");
-				String eArrival = input.getString("travel_time"); // need to calculate estimated arrival time
+				String eArrival = CalETime.calculateETime(input.getString("travel_time")); //calculate estimated arrival time
 				String cost = input.getString("cost");
 				String sender = input.getString("sender");
 				String receiver = input.getString("receiver");
@@ -86,9 +87,14 @@ public class SubmitOrder extends HttpServlet {
 				
 				if(conn.placeOrder(order)) {
 					obj.put("status", "your order has been created");
-				}else {
+				} else {
 					response.setStatus(401);
-					obj.put("status", "failed");
+					obj.put("status", "something went wrong when trying to create your order");
+				}
+				if(conn.updateRobotStatus(order.getRobotId(), order.getDestination(), "retrieving", "-1")) {
+					obj.put("robot_status", "assigned robot has received your order and is now on its way to retrieve the package");
+				} else {
+					
 				}
 				RpcHelper.writeJsonObject(response, obj);
 				

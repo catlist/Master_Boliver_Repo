@@ -117,7 +117,7 @@ public class MySQLTableCreation {
 					+ "sender VARCHAR(255) NOT NULL,"
 					+ "receiver VARCHAR(255) NOT NULL,"
 					+ "e_arrival VARCHAR(255) NOT NULL,"
-					+ "a_arrival VARCHAR(255) NOT NULL,"
+					+ "a_arrival VARCHAR(255),"
 					+ "create_time VARCHAR(255) NOT NULL,"
 					+ "cost VARCHAR(255) NOT NULL,"
 					+ "PRIMARY KEY (order_id) ,"
@@ -129,15 +129,15 @@ public class MySQLTableCreation {
 			
 			// Step 4: insert fake data
 			   // INSERT INTO Users
-			sql = "INSERT INTO Users VALUES('1','neko','neko','neko@email.com','ko','neko')";
+			sql = "INSERT INTO Users VALUES('neko2019032704500200000','neko','neko','neko@email.com','ko','neko')";
 			statement.execute(sql);
-			sql = "INSERT INTO Users VALUES('2','inu','inu','inu@email.com','ko','inu')";
+			sql = "INSERT INTO Users VALUES('inu2019032704500200001','inu','inu','inu@email.com','ko','inu')";
 			statement.execute(sql);
-			sql = "INSERT INTO Users VALUES('3','usagi','usagi','usagi@email.com','ko','usagi')";
+			sql = "INSERT INTO Users VALUES('usagi2019032704500200002','usagi','usagi','usagi@email.com','ko','usagi')";
 			statement.execute(sql);
-			sql = "INSERT INTO Users VALUES('4','sakana','sakana','sakana@email.com','yaki','sakana')";
+			sql = "INSERT INTO Users VALUES('sakana2019032704500200003','sakana','sakana','sakana@email.com','yaki','sakana')";
 			statement.execute(sql);
-			sql = "INSERT INTO Users VALUES('5','hito','hito','hito@email.com','hito','bito')";
+			sql = "INSERT INTO Users VALUES('hito2019032704500200004','hito','hito','hito@email.com','hito','bito')";
 			statement.execute(sql);
 			
 				// INSERT INTO RobotType, rate is in dolloar
@@ -180,21 +180,21 @@ public class MySQLTableCreation {
 			
 			    // INSERT INTO CurrentOrder
 			// order status: 0 = arrived; 1 = delivering ; 2 - retrieving ; 3 - completed; 4 - cancelled
-			sql = "INSERT INTO CurrentOrder VALUES('1','4','1','2','3639 18th St, San Francisco, CA 94110','375 Valencia St, San Francisco, CA 94103','koneko','Four Barrel Coffee','5:00pm 3/25/2019','20190305112325','0.6')";
+			sql = "INSERT INTO CurrentOrder VALUES('02019032705031200005','4','neko2019032704500200000','2','3639 18th St, San Francisco, CA 94110','375 Valencia St, San Francisco, CA 94103','koneko','Four Barrel Coffee','5:00pm 3/25/2019','20190305112325','0.6')";
 			statement.execute(sql);
-			sql = "INSERT INTO CurrentOrder VALUES('2','7','2','1','3639 Taraval, San Francisco, CA 94116','3132 Vicente St, San Francisco, CA 94116','koinu','Old Mandarin Islamic Restaurant','4:00pm 3/24/2019','20190325105623','0.5')";
+			sql = "INSERT INTO CurrentOrder VALUES('12019032705031200006','7','inu2019032704500200001','1','3639 Taraval, San Francisco, CA 94116','3132 Vicente St, San Francisco, CA 94116','koinu','Old Mandarin Islamic Restaurant','4:00pm 3/24/2019','20190325105623','0.5')";
 			statement.execute(sql);
-			sql = "INSERT INTO CurrentOrder VALUES('3','8','3','1','2450 Sutter St, San Francisco, CA 94115','1050 Van Ness Ave, San Francisco, CA 94109','kousagi','Mels Kitchen','1:00pm 3/23/2019','20190323105623','1.8')";
+			sql = "INSERT INTO CurrentOrder VALUES('22019032705031200007','8','usagi2019032704500200002','1','2450 Sutter St, San Francisco, CA 94115','1050 Van Ness Ave, San Francisco, CA 94109','kousagi','Mels Kitchen','1:00pm 3/23/2019','20190323105623','1.8')";
 			statement.execute(sql);		
-			sql = "INSERT INTO CurrentOrder VALUES('4','9','1','2','555 Tompkins Ave, San Francisco, CA 94110','299 Bayshore Blvd, San Francisco, CA 94124','koneko','The Old Clam House','2:00pm 3/26/2019','20190324105623','0.8')";
+			sql = "INSERT INTO CurrentOrder VALUES('32019032705031200008','9','neko2019032704500200000','2','555 Tompkins Ave, San Francisco, CA 94110','299 Bayshore Blvd, San Francisco, CA 94124','koneko','The Old Clam House','2:00pm 3/26/2019','20190324105623','0.8')";
 			statement.execute(sql);
-			sql = "INSERT INTO CurrentOrder VALUES('5','10','2','1','3138 Noriega St, San Francisco, CA 94122','1916 Irving St, San Francisco, CA 94122','koinu','Tpumps','11:00am 3/25/2019','20190320105623','2.7')";
+			sql = "INSERT INTO CurrentOrder VALUES('42019032705031200009','10','inu2019032704500200001','1','3138 Noriega St, San Francisco, CA 94122','1916 Irving St, San Francisco, CA 94122','koinu','Tpumps','11:00am 3/25/2019','20190320105623','2.7')";
 			statement.execute(sql);
 			
 			
 			    // INSERT INTO OrderHistory
 			// order status: 0 - arrived; waiting - 1; 2 - sending; 3 - canceled;
-			sql = "INSERT INTO OrderHistory VALUES('6','2','5', '0','3369 Mission St, San Francisco, CA 94110','448 Cortland Ave, San Francisco, CA 94110','hitobito','The Good Life Grocery','11:30am 3/17/2019','12:00pm 3/17/2019','20190321105623' , '0.75')";
+			sql = "INSERT INTO OrderHistory VALUES('52019032705031200010','2','hito2019032704500200004', '0','3369 Mission St, San Francisco, CA 94110','448 Cortland Ave, San Francisco, CA 94110','hitobito','The Good Life Grocery','11:30am 3/17/2019','12:00pm 3/17/2019','20190321105623' , '0.75')";
 			statement.execute(sql);
 			
 			

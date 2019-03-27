@@ -1,5 +1,3 @@
-use the logic that generate orderId in submitOrder to generate userId in Register
-
 submitOrder(robotType, baseAddress, origin, destination) {
     find and assign robot()
 	new CurrentOrder()
@@ -7,22 +5,16 @@ submitOrder(robotType, baseAddress, origin, destination) {
 	return message telling user that his/her order has been submitted/created
 }
 
-confirmOrder(order_id){
-    update order status
+moveOrder(orderId, newOrderStatus){ <-- this implements both cancelOrder and confirmOrder
     update robot status
-    move order from currentOrder to orderHistory
     send robot back to closest base
+    update order status
+    move order from currentOrder to orderHistory
 }
 
-cancelOrder(order_id){
-	update order status
-	update robot status
-	move order from currentOrder to orderHistory
-	send robot back to closest base
-}
 
 TODO:
-1. calculate estimated arrival time given travel_time(minutes) and currentTime
-2. finish updateRobotStatus( )
-3. confirmOrder(order_id)
-4. cancelOrder(order_id)
+
+3.1 list all implemented business logic
+3.2 create some test cases to demostrate backend logic
+3.3 write design doc

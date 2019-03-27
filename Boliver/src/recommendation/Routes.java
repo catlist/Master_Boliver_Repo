@@ -83,26 +83,7 @@ public class Routes {
 		double groundPrice = robotInfo.getGroundRobotRate() * ((groundRobot.getDistance_meters() + dMatrixOfCGB.getDistance_meters())/1609.344);
 		
 		System.out.println("returning object"); // <--- to show in console that I have successfully reached this point
-		
-		/* <---------------------------- old returned JSONObject
-		obj.put("origin", origin)
-		   .put("destination", destination)
-		   .put("distance_drone", drone.get("distance") + " mile")
-		   .put("time_needed_drone", drone.get("time") + " mins")
-		   .put("drone_Price", dronePrice)
-		   .put("robot_Price", groundPrice)
-		   .put("distance_groundRobot:", groundRobot.getDistance_text())
-		   .put("time_needed_groundRobot:", groundRobot.getDuration_text());
-		if (ClosestGrobotBase != null) {
-			obj.put("ground_pickupTime(min)", dMatrixOfCGB.getDuration_seconds()/60)
-			   .put("ground_base", ClosestGrobotBase.getAddress());
-		}
-		if (ClosestGrobotBase != null) {
-			obj.put("drone_pickupTime(min)", distanceOfCDB/drone.get("speed"))
-			   .put("drone_base", ClosestDroneBase.getAddress());
-		}
-		*/
-		
+			
 		JSONObject mainObj = new JSONObject();
 		JSONObject addr = new JSONObject();
 		JSONObject droneObj = new JSONObject();

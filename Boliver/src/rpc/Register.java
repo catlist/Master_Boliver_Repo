@@ -1,6 +1,8 @@
 package rpc;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,6 +23,7 @@ import oAuth.CreateAndVerify;
 @WebServlet("/register")
 public class Register extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static int RANDOM = 0;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -46,27 +49,35 @@ public class Register extends HttpServlet {
 			
 		} else {
 			DBConnection connection = DBConnectionFactory.getConnection();
-		   	 try {
-		   		 JSONObject input = RpcHelper.readJSONObject(request);
-		   		 String userId = input.getString("user_id");
-		   		 String username = input.getString("username");
-		   		 String password = input.getString("password");
-		   		 String email = input.getString("email");
-		   		 String firstname = input.getString("first_name");
-		   		 String lastname = input.getString("last_name");
-		   		 
-		   		 JSONObject obj = new JSONObject();
-		   		 if(connection.registerUser(userId, username, password, email, firstname, lastname)) {
-		   			 obj.put("status", "you have wooooooo offically joined the rainbowBunny club, welcome!");
-		   		 }else {
-		   			 obj.put("status", "Wooooo! userID already exists or something else is wrong I guess ^_^");
-		   		 }
-		   		RpcHelper.writeJsonObject(response, obj);
-		   	 } catch (Exception e) {
-		   		 e.printStackTrace();
-		   	 } finally {
-		   		 connection.close();
-		   	 }
+			
+			Date date = new Date();
+			SimpleDateFormat mf = new SimpleDateFormat("yyyyMMddhhmmss");
+			String createTime = mf.format(date);
+			String id = createTime + String.format("%05d", RANDOM++);
+			if (RANDOM >= 100) {
+				RANDOM = 0;
+			}
+			try {
+				 JSONObject input = RpcHelper.readJSONObject(request);
+				 String userId = input.getString("username") + id;
+				 String username = input.getString("username");
+				 String password = input.getString("password");
+				 String email = input.getString("email");
+				 String firstname = input.getString("first_name");
+				 String lastname = input.getString("last_name");
+			 
+			 JSONObject obj = new JSONObject();
+			 if(connection.registerUser(userId, username, password, email, firstname, lastname)) {
+				 obj.put("status", "you have wooooooo offically joined the rainbowBunny club, welcome!");
+			 }else {
+				 obj.put("status", "Wooooo! userID already exists or something else is wrong I guess ^_^");
+				 }
+				RpcHelper.writeJsonObject(response, obj);
+			} catch (Exception e) {
+				 e.printStackTrace();
+			} finally {
+				 connection.close();
+			}	
 		}	
 	}
 

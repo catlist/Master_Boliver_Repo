@@ -35,5 +35,13 @@ public interface DBConnection {
 	
 	public String getRobotId(String baseAddress, String robotType);
 	
-	public boolean updateRobotStatus(String robotId, String destination); 
+	public boolean updateRobotStatus(String robotId, String destination, String newStatus, String baseId);
+	
+	public boolean moveOrder(String orderI, String newStatus);
+	
+	public boolean updateOrderStatus(String orderId, String newStatus);
+	
+	public boolean cancelOrder(String oderId);
+	
+	public boolean confirmOrder(String oderId);
 }
