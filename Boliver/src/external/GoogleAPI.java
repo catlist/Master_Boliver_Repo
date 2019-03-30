@@ -19,11 +19,10 @@ import entity.GeoLocation;
 
 public class GoogleAPI {
 	private static final String URL_DISTANCE_MATRIX = "https://maps.googleapis.com/maps/api/distancematrix/json?";
-
-	private static final String DISTANCE_MATRIX_API_KEY = " ";
+	private static final String DISTANCE_MATRIX_API_KEY = "";
 	private static final String MODE = "bicycling";
 	private static final String URL_GEOENCODING = "https://maps.googleapis.com/maps/api/geocode/json?";
-	private static final String GEOENCODING_API_KEY = " ";
+	private static final String GEOENCODING_API_KEY = "";
 	
 	public static GeoLocation getGeoEncoding(String address){
 		
@@ -53,7 +52,7 @@ public class GoogleAPI {
 
 			JSONObject obj = new JSONObject(response.toString());
 			if (!obj.isNull("results")) {
-				return getGeoEncodingObj(obj.getJSONArray("results"));
+				return getGeoEncodingObj(obj.getJSONArray("results"), address);
 			}
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -69,12 +68,12 @@ public class GoogleAPI {
 		return null;
 	}
 	
-	public static GeoLocation getGeoEncodingObj(JSONArray results){
+	public static GeoLocation getGeoEncodingObj(JSONArray results, String address){
 		try {
 			JSONObject result = results.getJSONObject(0);
 			JSONObject geometry = result.getJSONObject("geometry");
 			JSONObject location  = geometry.getJSONObject("location");
-			GeoLocation encoding = new GeoLocation(location.getDouble("lat"), location.getDouble("lng"));		
+			GeoLocation encoding = new GeoLocation(location.getDouble("lat"), location.getDouble("lng"), address);		
 			
 			return encoding;
 			
